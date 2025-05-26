@@ -1,11 +1,20 @@
 pub mod basic_stats;
+pub mod debug;
+pub mod field_table;
+pub mod form_table;
 pub mod horse;
 pub mod horse_entry;
 pub mod horse_info;
+pub mod meeting;
+pub mod race;
+pub mod race_info;
 pub mod race_start;
+pub mod risa_scraper;
+pub mod title_table;
 
 pub use basic_stats::BasicStats;
-pub use horse::Horse;
+pub use debug::debug_regex_progressively;
+pub use field_table::{FieldTable, FieldTableHorse};
 pub use horse_entry::HorseEntry;
 pub use horse_info::HorseInfo;
 pub use race_start::RaceStart;

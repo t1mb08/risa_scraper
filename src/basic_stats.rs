@@ -1,13 +1,15 @@
 use regex::Regex;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
+
 pub struct BasicStats {
     pub trainer: String,
     pub trainer_location: String,
     pub jockey: String,
     pub jockey_claim: Option<String>,
     pub weight: Option<String>,
-    pub barrier: u32,
+    pub barrier: i32,
     pub record: String,
     pub prizemoney: String,
     pub first_up: String,
@@ -22,12 +24,34 @@ pub struct BasicStats {
     pub synthetic: String,
 }
 impl BasicStats {
+    pub fn new() -> Self {
+        Self {
+            trainer: String::new(),
+            trainer_location: String::new(),
+            jockey: String::new(),
+            jockey_claim: None,
+            weight: None,
+            barrier: 0,
+            record: String::new(),
+            prizemoney: String::new(),
+            first_up: String::new(),
+            second_up: String::new(),
+            track: String::new(),
+            dist: String::new(),
+            track_dist: String::new(),
+            firm: String::new(),
+            good: String::new(),
+            soft: String::new(),
+            heavy: String::new(),
+            synthetic: String::new(),
+        }
+    }
     pub fn parse_basic_stats(input: &str) -> BasicStats {
         let trainer_re = Regex::new(r"Trainer:\s*([\w\s]+)\s+\(([^)]+)\)").unwrap();
         let jockey_re = Regex::new(r"Jockey:\s*([\w\s]+)\s+(\d+kg)(?:\s+\(([^)]+)\))?").unwrap();
         let barrier_re = Regex::new(r"Barrier:(\d+)").unwrap();
         let record_re = Regex::new(r"Record:\s*([^\n\r]+)").unwrap();
-        let prizemoney_re = Regex::new(r"Prizemoney:\s*([^1]+)").unwrap();
+        let prizemoney_re = Regex::new(r"Prizemoney:\s*(\$\d[\d,]*)").unwrap();
         let first_up_re = Regex::new(r"1st Up:\s*([^\s]+)").unwrap();
         let second_up_re = Regex::new(r"2nd Up:\s*([^\s]+)").unwrap();
 
@@ -68,7 +92,7 @@ impl BasicStats {
             barrier: barrier_re
                 .captures(input)
                 .and_then(|c| c.get(1))
-                .and_then(|m| m.as_str().parse::<u32>().ok())
+                .and_then(|m| m.as_str().parse::<i32>().ok())
                 .unwrap_or(0),
             record: record_re
                 .captures(input)

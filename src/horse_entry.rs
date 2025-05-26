@@ -1,7 +1,8 @@
 use crate::horse_info::HorseInfo;
-use scraper::{ElementRef, Html, Selector};
+use scraper::{ElementRef, Selector};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct HorseEntry {
     pub number: String,
     pub name: String,

@@ -1,15 +1,46 @@
 use crate::race::Race;
 use scraper::{Html, Selector};
 use serde::{Deserialize, Serialize};
+use std::error;
 use std::fs::File;
 use std::io::{self, Write};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Meeting {
+    pub venue: String,
+    pub date: String,
+    pub meeting_type: String,
     pub races: Vec<Race>,
 }
 
 impl Meeting {
+    pub async fn parse_meeting(url: &str) -> Result<Meeting, Box<dyn error::Error>> {
+        let body = reqwest::get(url).await?.text().await?;
+
+        let title_raw = body.split("<!-- start of races -->").next().unwrap();
+
+        let (venue, date, meeting_type) = Meeting::parse_meeting_top(title_raw);
+
+        println!("{}", venue);
+        println!("{}", date);
+        println!("{}", meeting_type);
+
+        let mut races = Vec::new();
+        for race_raw in body.split("<!-- start of races -->").skip(1) {
+            // Make HTML structure
+            let race_html = Html::parse_fragment(&race_raw);
+            let race = Race::parse_race(race_html).unwrap();
+            races.push(race);
+        }
+
+        Ok(Meeting {
+            venue,
+            date,
+            meeting_type,
+            races,
+        })
+    }
+
     pub fn parse_meeting_top(title_raw: &str) -> (String, String, String) {
         let title_html = Html::parse_fragment(title_raw);
 

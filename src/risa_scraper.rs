@@ -1,48 +1,68 @@
-use crate::{
-    FieldTable, form_table::FormTable, horse::Horse, meeting::Meeting, race::Race,
-    title_table::TitleTable,
-};
 use scraper::{Html, Selector};
-use std::error;
+use std::error::Error;
+
 pub struct RisaScraper;
 
 impl RisaScraper {
+    const URL: &'static str = "https://www.racingaustralia.horse/";
+
     pub fn new() -> Self {
         Self {}
     }
-    pub async fn parse_meeting(&self, url: &str) -> Result<Meeting, Box<dyn error::Error>> {
-        let body = reqwest::get(url).await?.text().await?;
 
-        let title_raw = body.split("<!-- start of races -->").next().unwrap();
+    pub async fn get_meetings(&self) -> Result<Vec<Meeting>, Box<dyn Error>> {
+        let body = reqwest::get(Self::URL).await?.text().await?;
+        let doc = Html::parse_document(&body);
 
-        let (venue, date, meeting_type) = Meeting::parse_meeting_top(title_raw);
+        let calendar_selector = Selector::parse(".full_calendar").unwrap();
+        let row_selector = Selector::parse(".rows").unwrap();
+        let td_selector = Selector::parse("td").unwrap();
+        let a_selector = Selector::parse("a").unwrap();
 
-        println!("{}", venue);
-        println!("{}", date);
-        println!("{}", meeting_type);
+        let calendar = doc
+            .select(&calendar_selector)
+            .next()
+            .ok_or("No .full-calendar element found")?;
 
-        let mut races = Vec::new();
-        for race_raw in body.split("<!-- start of races -->").skip(1) {
-            // Make HTML structure
-            let race_html = Html::parse_fragment(&race_raw);
-            let race = RisaScraper::parse_race(race_html).unwrap();
-            races.push(race);
+        let mut meetings = vec![];
+
+        for row in calendar.select(&row_selector) {
+            let tds: Vec<_> = row.select(&td_selector).collect();
+
+            if tds.len() != 9 {
+                println!("skip header or malformed rows len:{}", tds.len());
+                continue; // skip header or malformed rows
+            }
+
+            let date = tds[0]
+                .text()
+                .collect::<Vec<_>>()
+                .join(" ")
+                .trim()
+                .to_string();
+
+            for td in &tds[1..] {
+                for a in td.select(&a_selector) {
+                    let track = a.text().collect::<String>().trim().to_string();
+                    let href = a.value().attr("href").unwrap_or("").to_string();
+                    let link = format!("https://www.racingaustralia.horse{}", href);
+
+                    meetings.push(Meeting {
+                        date: date.clone(),
+                        track,
+                        link,
+                    });
+                }
+            }
         }
 
-        Ok(Meeting { races })
+        Ok(meetings)
     }
+}
 
-    fn parse_race(race_html: Html) -> Result<Race, Box<dyn error::Error>> {
-        let title = TitleTable::parse_table(&race_html).unwrap();
-
-        println!("{}", title.name);
-        let field = FieldTable::parse_table(&race_html).unwrap();
-        let form = FormTable::parse_table(&race_html, field.horses.len() as i32).unwrap();
-
-        let r1 = Race {
-            title,
-            field: Horse::vec_zip(field.horses, form.horses),
-        };
-        Ok(r1)
-    }
+#[derive(Debug)]
+pub struct Meeting {
+    date: String,
+    track: String,
+    link: String,
 }

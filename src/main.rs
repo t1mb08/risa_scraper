@@ -1,13 +1,14 @@
-use risa_scaper::risa_scraper::RisaScraper;
-use std::error;
+use std::error::Error;
 
-const URL: &str =
-    "https://www.racingaustralia.horse/FreeFields/Form.aspx?Key=2025May28%2CQLD%2CDoomben";
+use risa_scaper::risa_scraper::RisaScraper;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn error::Error>> {
-    let risa = RisaScraper::new();
-    let town = risa.parse_meeting(URL).await?;
-    println!("{:#?}", town);
+async fn main() -> Result<(), Box<dyn Error>> {
+    println!("Hello Scraper!!!");
+
+    let risa_scraper = RisaScraper::new();
+
+    let meetings = risa_scraper.get_meetings().await?;
+    println!("{:#?}", meetings);
     Ok(())
 }

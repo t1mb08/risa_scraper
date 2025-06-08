@@ -17,7 +17,7 @@ pub struct Horse {
     pub jockey: String,
     pub jockey_claim: Option<String>,
 
-    pub barrier: i32,
+    pub barrier: String,
     pub weight: String,
     pub probable_weight: String,
     pub penalty: String,
@@ -58,12 +58,12 @@ impl Horse {
             silks_img_src: form.horse.silks_img_src,
             last10: field.last10,
 
-            trainer: form.stats.trainer,
+            trainer: field.trainer,
             trainer_location: form.stats.trainer_location,
-            jockey: form.stats.jockey,
+            jockey: field.jockey,
             jockey_claim: form.stats.jockey_claim,
 
-            barrier: form.stats.barrier,
+            barrier: field.barrier,
             weight: form.stats.weight.unwrap_or(field.weight),
             probable_weight: field.probable_weight,
             penalty: field.penalty,

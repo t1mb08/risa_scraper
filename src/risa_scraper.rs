@@ -10,11 +10,11 @@ impl RisaScraper {
         Self {}
     }
 
-    pub async fn get_meetings(&self) -> Result<Vec<Meeting>, Box<dyn Error>> {
+    pub async fn get_meetings(&self) -> Result<Vec<MeetingLink>, Box<dyn Error>> {
         let body = reqwest::get(Self::URL).await?.text().await?;
         let doc = Html::parse_document(&body);
 
-        let calendar_selector = Selector::parse(".full_calendar").unwrap();
+        let calendar_selector = Selector::parse(".full-calendar").unwrap();
         let row_selector = Selector::parse(".rows").unwrap();
         let td_selector = Selector::parse("td").unwrap();
         let a_selector = Selector::parse("a").unwrap();
@@ -47,7 +47,7 @@ impl RisaScraper {
                     let href = a.value().attr("href").unwrap_or("").to_string();
                     let link = format!("https://www.racingaustralia.horse{}", href);
 
-                    meetings.push(Meeting {
+                    meetings.push(MeetingLink {
                         date: date.clone(),
                         track,
                         link,
@@ -61,8 +61,8 @@ impl RisaScraper {
 }
 
 #[derive(Debug)]
-pub struct Meeting {
-    date: String,
-    track: String,
-    link: String,
+pub struct MeetingLink {
+    pub date: String,
+    pub track: String,
+    pub link: String,
 }

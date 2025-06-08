@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use risa_scaper::risa_scraper::RisaScraper;
+use risa_scraper::risa_scraper::RisaScraper;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {

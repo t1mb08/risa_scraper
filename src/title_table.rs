@@ -4,7 +4,7 @@ use scraper::{Html, Selector};
 use crate::race_info::RaceInfo;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TitleTable {
     pub number: u32,
     pub time: String,

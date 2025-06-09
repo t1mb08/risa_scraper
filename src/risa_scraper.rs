@@ -1,6 +1,7 @@
 use scraper::{Html, Selector};
 use std::error::Error;
 
+#[derive(Debug, Clone)]
 pub struct RisaScraper;
 
 impl RisaScraper {
@@ -60,7 +61,7 @@ impl RisaScraper {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct MeetingLink {
     pub date: String,
     pub track: String,

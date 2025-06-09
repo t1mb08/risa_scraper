@@ -5,7 +5,7 @@ use std::error;
 use std::fs::File;
 use std::io::{self, Write};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Meeting {
     pub venue: String,
     pub date: String,
@@ -20,10 +20,6 @@ impl Meeting {
         let title_raw = body.split("<!-- start of races -->").next().unwrap();
 
         let (venue, date, meeting_type) = Meeting::parse_meeting_top(title_raw);
-
-        println!("{}", venue);
-        println!("{}", date);
-        println!("{}", meeting_type);
 
         let mut races = Vec::new();
         for race_raw in body.split("<!-- start of races -->").skip(1) {

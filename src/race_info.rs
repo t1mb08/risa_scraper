@@ -2,13 +2,13 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Clone, Deserialize, Debug)]
 pub struct PrizeMoney {
     pub total: u32,
     pub places: HashMap<String, u32>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct RaceInfo {
     pub prizemoney: Option<PrizeMoney>,
     pub animal_deduction: Option<String>,

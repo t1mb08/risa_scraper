@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{form_table::FormTableHorse, FieldTableHorse};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Horse {
     pub number: i32,
     pub emergency: bool,
